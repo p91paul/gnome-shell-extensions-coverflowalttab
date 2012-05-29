@@ -73,10 +73,10 @@ Switcher.prototype = {
 			this._mcid = this._shellwm.connect('map', Lang.bind(this, this._activateSelected));
 			
 			let monitor = Main.layoutManager.primaryMonitor;
-			this.actor = new St.Group({ visible: true, reactive: true, });
-
+			this.actor = new St.Widget({ visible: true, reactive: true, });
+			
 			// background
-			this._background = new St.Group({
+			this._background = new St.Widget({
 				style_class: 'coverflow-switcher',
 				visible: true,
 				reactive: true,
@@ -86,6 +86,7 @@ Switcher.prototype = {
 				width: monitor.width,
 				height: monitor.height
 			});
+			
 			// background gradient
 			this._background.add_actor(new St.Bin({
 				style_class: 'coverflow-switcher-gradient',
@@ -100,7 +101,7 @@ Switcher.prototype = {
 
 			// create previews
 			let currentWorkspace = global.screen.get_active_workspace();
-			this._previewLayer = new St.Group({ visible: true, reactive: true });
+			this._previewLayer = new St.Widget({ visible: true, reactive: true });
 			this._previews = [];
 			for (i in windows) {
 				let metaWin = windows[i];
@@ -218,7 +219,7 @@ Switcher.prototype = {
 				loop = false;
 			}
 			// on a loop, we want a faster and linear animation
-			let animation_time = loop ? 0.05 : 0.25;
+			let animation_time = loop ? 0.0 : 0.25;
 			let transition_type = loop ? 'linear' : 'easeOutQuad';
 			
 			let monitor = Main.layoutManager.primaryMonitor;
@@ -370,11 +371,10 @@ Switcher.prototype = {
 		
 		_keyPressEvent: function(actor, event) {
 			let keysym = event.get_key_symbol();
-			let event_state = Shell.get_event_state(event);
-
+			let event_state = event.get_state();
 			let backwards = event_state & Clutter.ModifierType.SHIFT_MASK;
 			let action = global.display.get_keybinding_action(event.get_key_code(), event_state);
-						
+
 			// Esc -> close CoverFlow
 			if (keysym == Clutter.Escape) {
 				this.destroy();
