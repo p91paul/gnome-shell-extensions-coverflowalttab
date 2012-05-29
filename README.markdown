@@ -19,7 +19,7 @@ Installation
 
 #### Gnome-Shell ####
 
-Make sure you are on branch Gnome-Shell (it is the default) to download the extension for Gnome-Shell.
+Make sure you are on the appropriate branch for your Gnome-Shell version (3.4 is the default, there is also one for 3.2) and download the extension.
 
   1. Copy the folder "CoverflowAltTab@dmo60.de" to `~/.local/share/gnome-shell/extensions/`.
 		
