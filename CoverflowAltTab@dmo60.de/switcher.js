@@ -1,5 +1,3 @@
-/* -*0 mode: js2; js2-basic-offset: 4; indent-tabs-mode: nil -* */
-
 /* CoverflowAltTab::Switcher:
  *
  * The implementation of the switcher UI. Handles keyboard events.
@@ -395,7 +393,6 @@ Switcher.prototype = {
 		},
 
 		_keyReleaseEvent: function(actor, event) {
-			
 			let [x, y, mods] = global.get_pointer();
 			let state = mods & this._modifierMask;
 
@@ -418,6 +415,7 @@ Switcher.prototype = {
 		},
 		
 		_windowDestroyed: function(shellwm, actor) {
+			global.log("destroyed");
 			let window = actor.meta_window;
 			
 			for (i in this._windows) {
@@ -428,7 +426,8 @@ Switcher.prototype = {
 						this._windows.splice(i, 1);
 						this._previews[i].destroy();
 						this._previews.splice(i, 1);
-						this._currentIndex = (i < this._currentIndex) ? this._currentIndex - 1 : this._currentIndex;
+						this._currentIndex = (i < this._currentIndex) ? this._currentIndex - 1 : 
+							this._currentIndex % this._windows.length;
 						this._updateCoverflow();
 						return;
 					}
