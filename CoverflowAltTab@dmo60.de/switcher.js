@@ -473,6 +473,8 @@ Switcher.prototype = {
 					let metaWin = this._windows[i];
 					let compositor = this._windows[i].get_compositor_private();
 					
+					if (i != this._currentIndex)
+						preview.lower_bottom();
 					let rotation_vertex_x = 0.0;
 					if (preview.get_anchor_point_gravity() == Clutter.Gravity.EAST) {
 						rotation_vertex_x = preview.width / 2;
