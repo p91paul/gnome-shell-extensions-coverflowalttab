@@ -7,6 +7,7 @@
 
 const Lang = imports.lang;
 const Main = imports.ui.main;
+const Meta = imports.gi.Meta;
 
 const CoverflowAltTab = imports.misc.extensionUtils.getCurrentExtension();
 
@@ -32,17 +33,23 @@ Manager.prototype = {
 		win.delete(global.get_current_time());
 	},
 
-	_startWindowSwitcher: function (shellwm, binding, mask, window, backwords) {
+	_startWindowSwitcher: function (display, screen, window, binding) {
+		//global.log("startWindowSwitcher called");
+		
+		let backwards = modifiers & Meta.VirtualModifier.SHIFT_MASK;
+		let modifiers = binding.get_modifiers();
 		let windows = [];
 		let actions = {};
 		let currentWorkspace = global.screen.get_active_workspace();
 		let currentIndex = 0;
 
+		//global.log("binding: " + binding.get_name());
 		// construct a list with all windows
 		let windowActors = global.get_window_actors();
 		for (let i in windowActors) {
 			windows.push(windowActors[i].get_meta_window());
 		}
+		
 		windowActors = null;
 		windows.sort(Lang.bind(this,
 			function(win1, win2) {
@@ -54,13 +61,13 @@ Manager.prototype = {
 		));
 
 		// filter by modes
-		if (binding == 'switch_group') {
+		if (binding.get_name() == 'switch_group') {
 			windows = windows.filter(
 				function(win) {
 					return win.get_workspace() == currentWorkspace && !win.is_skip_taskbar();
 				}
 			);
-		} else if (binding == 'switch_panels') {
+		} else if (binding.get_name() == 'switch_panels') {
 			let focused = global.display.focus_window;
 			if (!focused)
 				focused = windows[0];
@@ -81,15 +88,17 @@ Manager.prototype = {
 		if (windows.length) {
 			actions['activate_selected'] = this._activateSelectedWindow;
 			actions['remove_selected'] = this._removeSelectedWindow;
-
+			
 			if (!global.display.focus_window) {
 				currentIndex = -1;
 			}
-
+			
 			let switcher = new Switcher.Switcher(windows, actions);
+			
+			//global.log("switcher: " + switcher);
 			switcher._currentIndex = currentIndex;
 
-			if (!switcher.show(shellwm, binding, mask, window, backwords)) {
+			if (!switcher.show(backwards, binding.get_name(), binding.get_mask())) {
 				switcher.destroy();
 			}
 		}

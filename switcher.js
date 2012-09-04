@@ -30,12 +30,14 @@ Switcher.prototype = {
 		this._currentIndex = 0;
 		this._actions = actions;
 		this._haveModal = false;
-
+		
 		let monitor = Main.layoutManager.primaryMonitor;
-		this.actor = new St.Group({ visible: true });
+		this.actor = new Shell.GenericContainer({ name: 'altTabVisiblePopup',
+									 reactive: true,
+									 visible: true });
 
 		// background
-		this._background = new St.Group({
+		this._background = new Shell.GenericContainer({
 			style_class: 'coverflow-switcher',
 			visible: true,
 			x: 0,
@@ -56,7 +58,10 @@ Switcher.prototype = {
 
 		// create previews
 		let currentWorkspace = global.screen.get_active_workspace();
-		this._previewLayer = new St.Group({ visible: true });
+		this._previewLayer = new Shell.GenericContainer({
+				name: 'previewLayer', 
+				visible: true 
+		});
 		this._previews = [];
 		for (let i in windows) {
 			let metaWin = windows[i];
@@ -94,7 +99,7 @@ Switcher.prototype = {
 		Main.uiGroup.add_actor(this.actor);
 	},
 
-	show: function(shellwm, binding, mask, window, backwords) {
+	show: function(shellwm, binding, mask, window, backwards) {
 		if (!Main.pushModal(this.actor)) {
 			return false;
 		}
@@ -111,8 +116,10 @@ Switcher.prototype = {
 		for (let i in windows) {
 			windows[i].hide();
 		}
-
-		this._next();
+		if (backwards)
+			this._previous();
+		else
+			this._next();
 
 		// There's a race condition; if the user released Alt before
 		// we gotthe grab, then we won't be notified. (See
@@ -146,7 +153,6 @@ Switcher.prototype = {
 
 	_updateCoverflow: function() {
 		let monitor = Main.layoutManager.primaryMonitor;
-
 		// window title label
 		if (this._windowTitle) {
 			Tweener.addTween(this._windowTitle, {
@@ -171,12 +177,12 @@ Switcher.prototype = {
 			time: 0.25,
 			transition: 'easeOutQuad',
 		});
-
 		// preview windows
 		for (let i in this._previews) {
 			let preview = this._previews[i];
-
+			global.log("i:"+i+" currentIndex:"+this._currentIndex);
 			if (i == this._currentIndex) {
+				global.log("middle :"+preview);
 				preview.raise_top();
 				Tweener.addTween(preview, {
 					opacity: 255,
@@ -213,12 +219,13 @@ Switcher.prototype = {
 					transition: 'easeOutQuad',
 				});
 			}
+			
 		}
 	},
 
 	_keyPressEvent: function(actor, event) {
 		let keysym = event.get_key_symbol();
-		let event_state = Shell.get_event_state(event);
+		let event_state = event.get_state();
 
 		let backwards = event_state & Clutter.ModifierType.SHIFT_MASK;
 		let action = global.display.get_keybinding_action(event.get_key_code(), event_state);
