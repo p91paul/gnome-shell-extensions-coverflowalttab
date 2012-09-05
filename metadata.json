@@ -1,7 +1,7 @@
 {
 	"shell-version": ["3.4"],
-	"uuid": "CoverflowAltTab@palatis.blogspot.com",
+	"uuid": "CoverflowAltTab@p91paul_github.com",
 	"name": "Coverflow Alt-Tab",
 	"description": "Replacement of Alt-Tab, iterates through windows in a cover-flow manner.",
-	"url": "http://code.google.com/p/gnome-shell-extensions-coverflowalttab/"
+	"url": "https://github.com/p91paul/gnome-shell-extensions-coverflowalttab"
 }
