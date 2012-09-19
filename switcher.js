@@ -311,7 +311,6 @@ Switcher.prototype = {
 	_keyReleaseEvent: function(actor, event) {
 		let [x, y, mods] = global.get_pointer();
 		let state = mods & this._modifierMask;
-
 		if (state == 0) {
 			this._activateSelected();
 		}
@@ -321,7 +320,8 @@ Switcher.prototype = {
 	},
 
 	_activateSelected: function() {
-		this._actions['activate_selected'](this._windows[this._currentIndex]);
+		if (this._windows!=null && this._currentIndex>=0)
+			this._actions['activate_selected'](this._windows[this._currentIndex]);
 		this.destroy();
 	},
 
@@ -341,24 +341,25 @@ Switcher.prototype = {
 
 	_onDestroy: function() {
 		let monitor = Main.layoutManager.primaryMonitor;
-
 		// preview windows
 		let currentWorkspace = global.screen.get_active_workspace();
 		for (let i in this._previews) {
 			let preview = this._previews[i];
 			let metaWin = this._windows[i];
-			let compositor = this._windows[i].get_compositor_private();
-
-			Tweener.addTween(preview, {
-				opacity: (metaWin.get_workspace() == currentWorkspace || metaWin.is_on_all_workspaces()) ? 255 : 0,
-				x: compositor.x,
-				y: compositor.y,
-				width: compositor.width,
-				height: compositor.height,
-				rotation_angle_y: 0.0,
-				time: 0.25,
-				transition: 'easeOutQuad',
-			});
+			let compositor = metaWin.get_compositor_private();
+			//if current window has been destroyed after coverflow started, skip
+			if (compositor!=null){
+				Tweener.addTween(preview, {
+					opacity: (metaWin.get_workspace() == currentWorkspace || metaWin.is_on_all_workspaces()) ? 255 : 0,
+					x: compositor.x,
+					y: compositor.y,
+					width: compositor.width,
+					height: compositor.height,
+					rotation_angle_y: 0.0,
+					time: 0.25,
+					transition: 'easeOutQuad',
+				});
+			}
 		}
 
 		// applicaton icon

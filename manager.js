@@ -25,7 +25,9 @@ Manager.prototype = {
 	},
 
 	_activateSelectedWindow: function(win) {
-		Main.activateWindow(win);
+		//if selected window has been destroyed after coverflow started, skip
+		if (win.get_compositor_private()!=null)
+			Main.activateWindow(win);
 	},
 
 	_removeSelectedWindow: function(win) {
