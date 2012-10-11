@@ -1,5 +1,5 @@
 {
-	"shell-version": ["3.4"],
+	"shell-version": ["3.4","3.5","3.6"],
 	"uuid": "CoverflowAltTab@palatis.blogspot.com",
 	"name": "Coverflow Alt-Tab",
 	"description": "Replacement of Alt-Tab, iterates through windows in a cover-flow manner.",
